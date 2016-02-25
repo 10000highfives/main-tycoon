@@ -8,6 +8,8 @@ var MongoClient = require('./mongodb');
 var ObjectID = require('mongodb').ObjectID;
 var cheerio = require('./controllers/cheerio');
 var githubOAuth = require('./GithubService/githubOAuth');
+var createUser = require('./controllers/createUser');
+var UserModel = require('./models/UserModel');
 
 var app = express();
 app.use(cookieParser());
@@ -52,6 +54,20 @@ app.post('/apireqpost/post.stf', function(req, res, next) {
     res.send();
 });
 
+//route to test db writing -- delete before deploying
+app.get('/dbtest', (req,res) => {
+	req.body.id = 'myUsername';
+	console.log('body username ', req.body.id);
+	var user = new UserModel();
+	user.githubUsername = req.body.id;
+	user.save((err) => {
+		if (err) throw new Error('error writing to db ', err);
+	});
+
+	console.log('should write');
+	res.send('http://www.codesmith.io');
+})
+
 app.get('/apireqget/get.stf', function(req, res) {
   // console.log(req.cookies.website);
 
@@ -72,22 +88,6 @@ app.get('/apireqget/get.stf', function(req, res) {
 
 app.get('/apireqget/*', function(req, res) {
 	res.redirect(req.cookies.website + '/' + req.originalUrl.slice(10));
-});
-
-app.get('/tycooned/:id', function(req, res) {
-	var id = new ObjectID(req.params.id);
-
-	MongoClient(function(err, db) {
-		db.collection('apiCollection').findOne({_id: id}, function(err, result) {
-			if (result) {
-				res.sendStatus(200);
-			} else {
-				res.sendStatus(404);
-			}
-
-			db.close();
-		});
-	});
 });
 
 app.get('/goodbye.html', function(req, res) {
@@ -138,7 +138,11 @@ app.get('/login', function(req, res) {
 
 app.post('/githubOAuth', githubOAuth.redirectToGithub);
 
-app.get('/getAccessToken', githubOAuth.getAccessToken, githubOAuth.getUserInfo);
+app.get('/getAccessToken', githubOAuth.getAccessToken, githubOAuth.getUserInfo, createUser, (req,res) => {
+	if (err) throw err;
+	console.log('made it through createUser');
+	res.send('index.html')
+});
 
 // app.get('*', function(req, res, next) {
 //   console.log(req)
