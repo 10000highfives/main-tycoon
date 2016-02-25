@@ -3,6 +3,7 @@ var qs = require('querystring');
 var request = require('request');
 
 module.exports = {
+
   redirectToGithub (req, res, next) {
     var url = 'https://github.com/login/oauth/authorize/?' +
     'scope=user&' +
@@ -49,7 +50,8 @@ module.exports = {
     request(options, function(err, resp, body) {
       //body.login gives us the username - body also has a lot of other properties.
       console.log(body.login);
-      res.redirect('/')
+			//create new user with body.login
+			res.redirect('/')
     });
   },
 

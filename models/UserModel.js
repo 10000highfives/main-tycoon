@@ -4,7 +4,7 @@ const ApiLink = require('./ApiModel');
 
 
 var UserSchema = Schema({
-	userEmail: String,
+	githubUsername: String,
 	apiLinks: [ {type: Schema.Types.ObjectId, ref: 'ApiLink'} ]
 });
 

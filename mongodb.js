@@ -39,9 +39,9 @@ function addData (url) {
 	});
 }
 
-addData('http://www.google.com')
-addData('http://www.reddit.com')
-addData('http://www.facebook.com')
+addData('http://www.espn.com')
+addData('http://www.twitter.com')
+addData('http://www.aol.com')
 
 
 
