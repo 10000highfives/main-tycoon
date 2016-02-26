@@ -22,22 +22,46 @@ var cheerio = {
 				queries.forEach((query,i) => {
 					console.log("in forEach");
 					result[query.name] = [];
-					console.log('query string in foreach: ==>  ',query.string);
+					// console.log('query string in foreach: ==>  ',query.string);
 					//add error handling for bad query.string
 					$(query.string).each((i, elem) => {
-						console.log('query string in .each:', elem);
+						console.log($(elem).find('.meaning'));
+						// console.log('query string in .each:', elem);
 						if (query.first) {
-							console.log('query text exists')
+							// console.log('query text exists')
+							console.log('query inside cheerio:', query);
+							// if (query.attr === "text") console.log('klashdfkasfjhalskjfhaslkfja;sklfjas;lfkjsa;lfkjasf;lkjasf;');
 							var tmpObj = {};
-							tmpObj[query.name] = $(elem).text();
+							// if (query.attr === 'class') {
+							// 	var newClass = $(elem).className;
+							// 	console.log(newClass);
+							// }
+							if (query.attr === "text"){
+								tmpObj[query.name] = $(elem).text();
+							} else if ($(elem).attr('class') === query.class) {
+							  	tmpObj[query.name] = $(elem).text();
+							} else {
+								tmpObj[query.name] = $(elem).attr(query.attr);
+							}
 							result.push(tmpObj);
 						} else {
-							console.log('qt no no => to results array', result[i]);
 							if (result[i]){
-							result[i][query.name] = $(elem).text();
+								if (query.attr === "text"){
+									result[i][query.name] = $(elem).text();
+								} else if ($(elem).attr('class') === query.class) {
+								  	result[i][query.name] = $(elem).text();
+								} else {
+									result[i][query.name] = $(elem).attr(query.attr);
+								}
 							} else {
 								var tmpObj = {};
-								tmpObj[query.name] = $(elem).text();
+								if (query.attr === "text"){
+									tmpObj[query.name] = $(elem).text();
+								} else if ($(elem).attr('class') === query.class) {
+								  	tmpObj[query.name] = $(elem).text();
+								} else {
+									tmpObj[query.name] = $(elem).attr(query.attr);
+								}
 								result.push(tmpObj);
 							}
 						}

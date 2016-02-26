@@ -50,7 +50,7 @@ $(document).ready(function() {
             // console.log(results[0].className);
             let ancestryChain = "";
             for (let i = (results.length - 4); i >= 0; i--) {
-              // if (results[0].className === ""){
+              // if (results[0].className){
               //   console.log(results[0].className);
               //   ancestryChain += results[i].nodeName +'.'+ results[i].className + ' ';
               // } else {
@@ -67,9 +67,10 @@ $(document).ready(function() {
             }
             // console.log("attributes:", attributes);
             attributes.unshift({name: "text"});
-            cssHighlight(ancestryChain);
+            cssHighlight(ancestryChain,mainArray);
             gui.buildGUI(attributes);
 
+            var thisClass = e.target.className;
             // when you click the add element button
             $('#addObj').click((e) => {
               e.preventDefault();
@@ -78,9 +79,9 @@ $(document).ready(function() {
                 indivObj.string = ancestryChain;
                 indivObj.name = $('#propName').val();
                 indivObj.attr = indivAttr;
-                indivObj.text = e.target.textContent || "";
+                if (indivObj.attr === 'class') indivObj.class = thisClass;
                 console.log($(results[0]).text());
-              $('#gui-bottom').append("<p><strong>" + indivObj.name + ":</strong>"+  $(results[0]).text() + "</p>");
+              $('#gui-bottom').append("<p><strong>" + indivObj.name + ": </strong>"+  $(results[0]).text() + "</p>");
               // console.log("main array before: ", mainArray);
               mainArray.push(indivObj);
 
