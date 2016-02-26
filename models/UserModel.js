@@ -3,7 +3,7 @@ const Schema = mongoose.Schema;
 const ApiLink = require('./ApiModel');
 
 
-var UserSchema = Schema({
+var UserSchema = Schema({	
 	githubUsername: String,
 	apiLinks: [ {type: Schema.Types.ObjectId, ref: 'ApiLink'} ]
 });

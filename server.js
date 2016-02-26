@@ -1,3 +1,4 @@
+'use strict';
 var fs = require('fs');
 var express = require('express');
 var request = require('request');
@@ -9,7 +10,9 @@ var ObjectID = require('mongodb').ObjectID;
 var cheerio = require('./controllers/cheerio');
 var githubOAuth = require('./GithubService/githubOAuth');
 var createUser = require('./controllers/createUser');
-var UserModel = require('./models/UserModel');
+var User = require('./models/UserModel');
+var Api = require('./models/ApiModel');
+
 
 var app = express();
 app.use(cookieParser());
@@ -19,29 +22,35 @@ app.use(bodyParser.urlencoded({
 
 
 app.get('/', githubOAuth.isLoggedIn ,function(req, res) {
+
+	//get userId and set to cookieID
+	//res.cookie('apitycID', req.cookies.githubToken)
 	if (!req.cookies.apitycID || req.cookies.apitycID === 'null') {
-		MongoClient(function(err, db) {
-			db.collection('apiCollection').insert({}, function(err, doc) {
-				var uniqueID = doc.ops[0]._id;
-				res.cookie('apitycID', uniqueID);
-				res.send(fs.readFileSync(__dirname + '/index.html', 'utf8'));
-				db.close();
-			});
-		});
+			var newUser = new User();
+			var uniqueID = newUser._id;
+			console.log('username here? ', req.username);
+			console.log('uniqueID', uniqueID);
+			// db.collection('apiCollection').insert({}, function(err, doc) {
+			// 	var uniqueID = doc.ops[0]._id;
+			res.cookie('apitycID', uniqueID);
+			res.send(fs.readFileSync(__dirname + '/index.html', 'utf8'));
+			// 	db.close();
+			// });
+		}
 
     // if you need to see how to access the object after finding it
-    // } else if (req.cookies.apitycID) {
     //   MongoClient(function(err, db) {
-    //     var objID = new ObjectID(req.cookies.apitycID);
-
+    //     //var objID = new ObjectID(req.cookies.apitycID);
+		 //
     //     db.collection('apiCollection').findOne({_id: objID}, function(err, result) {
     //       console.log(result);
     //       res.send(fs.readFileSync(__dirname + '/index.html', 'utf8'));
     //       db.close();
     //     });
     //  });
-	} else {
+	 else {
 		res.send(fs.readFileSync(__dirname + '/index.html', 'utf8'));
+
 	}
 });
 
@@ -53,20 +62,6 @@ app.post('/apireqpost/post.stf', function(req, res, next) {
     res.cookie('website', req.body.website);
     res.send();
 });
-
-//route to test db writing -- delete before deploying
-app.get('/dbtest', (req,res) => {
-	req.body.id = 'myUsername';
-	console.log('body username ', req.body.id);
-	var user = new UserModel();
-	user.githubUsername = req.body.id;
-	user.save((err) => {
-		if (err) throw new Error('error writing to db ', err);
-	});
-
-	console.log('should write');
-	res.send('http://www.codesmith.io');
-})
 
 app.get('/apireqget/get.stf', function(req, res) {
   // console.log(req.cookies.website);
@@ -96,41 +91,46 @@ app.get('/goodbye.html', function(req, res) {
 
 app.post('/apisubmit', function(req, res) {
   var url = req.cookies.website;
-  var id = new ObjectID(req.cookies.apitycID);
-  var queries = req.body;
+  var id = req.cookies.apitycID;
 
-  console.log('ID ID', id, 'url', url, req.body);
+  //console.log('ID ID', id, 'url', url,' req body ', req.body);
+  //console.log('these are the queries ', req.body);
+	//find username passed down from github
 
-  MongoClient(function(err, db) {
-    db.collection('apiCollection').updateOne({_id: id}, { $set: { url: url, queries: queries}}, function(err, result) {
-      //console.log('updated result', result);
-      db.close();
-    });
-  });
-
-  res.cookie('apitycID', 'null');
+	res.cookie('queries', req.body)
+	res.cookie('apitycID', 'null');
   res.send(id);
-
 });
 
 app.get('/api/:id', function(req, res) {
-	console.log('getting to api ', req.url);
-	var id = new ObjectID(req.params.id);
-  // console.log('grabbed', id);
-  //get data from mongodb
+	console.log('getting to api: scraped url: ', req.cookies.website);
+	console.log('getting username: ', req.cookies.ghUser);
+	console.log('getting queries from cookie ', req.cookies.queries);
+	var id = req.params.id;
+	var scrapeURL = req.cookies.website;
+	var queries = req.cookies.queries;
+	var username = req.cookies.ghUser;
 
-  MongoClient(function(err, db) {
-    db.collection('apiCollection').findOne({_id: id}, function(err, result) {
-       console.log('found user', result);
-      var url = result.url;
-      var queries = result.queries;
-      cheerio.getData(url, [queries]).then(function(data) {
-        // console.log(data);
-        res.send(data);
-      });
-    });
+	// User.find({githubUsername: '10000highfives'}, function (err, user) {
+	// 	if (err) throw new Error('error query db ', user);
+	// 	console.log('user in db is ', user[0]);
+	// })
+
+	//save API to db with link to user;
+	var savedAPI = new Api();
+	savedAPI.scrapeURL = scrapeURL;
+	savedAPI.githubUsername = username;
+
+	savedAPI.find({scrapeURL: scrapeURL}, function (err, s) {
+		if (err) throw new Error()
+	})
+  cheerio.getData(scrapeURL, [queries]).then(function(data) {
+    // console.log(data);
+    res.send(data);
   });
-})
+});
+
+
 
 app.get('/login', function(req, res) {
   res.sendFile(__dirname + '/login.html');
@@ -139,9 +139,9 @@ app.get('/login', function(req, res) {
 app.post('/githubOAuth', githubOAuth.redirectToGithub);
 
 app.get('/getAccessToken', githubOAuth.getAccessToken, githubOAuth.getUserInfo, createUser, (req,res) => {
-	if (err) throw err;
+	//if (err) throw err;
 	console.log('made it through createUser');
-	res.send('index.html')
+	res.sendFile(__dirname + '/index.html');
 });
 
 // app.get('*', function(req, res, next) {

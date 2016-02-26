@@ -3,25 +3,10 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const mongoURI = 'mongodb://team-big-gulp:biggulp14@ds015478.mongolab.com:15478/big-gulp-api';
 
+
 mongoose.connect(mongoURI);
 
 const db = mongoose.connection;
-
-var UserSchema = new Schema({
-	sessionId: Number,
-	authToken: Number,
-	apiLink: [
-		{
-			date: Date,
-			url: String
-		}
-	]
-});
-
-var UserModel = mongoose.model('User', UserSchema);
-
-var session = 234234;
-var atoken = 23459082347345;
 
 function addData (url) {
 	var user = new UserModel();
@@ -39,11 +24,11 @@ function addData (url) {
 	});
 }
 
-addData('http://www.espn.com')
-addData('http://www.twitter.com')
-addData('http://www.aol.com')
+// addData('http://www.espn.com')
+// addData('http://www.twitter.com')
+// addData('http://www.aol.com')
 
 
 
 
-module.exports = UserModel;
+//module.exports = UserModel;

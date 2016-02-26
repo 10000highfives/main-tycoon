@@ -1,6 +1,8 @@
+'use strict';
 var githubKeys = require('./../config');
 var qs = require('querystring');
 var request = require('request');
+var User = require('./../models/UserModel')
 
 module.exports = {
 
@@ -11,8 +13,9 @@ module.exports = {
     'redirect_uri=http://localhost:4000/getAccessToken';
     res.redirect(url);
   },
+
   getAccessToken (req, res, next) {
-    console.log('query string', req.query.code);
+    //console.log('query string', req.query.code);
     var queryForAccessToken = {
       client_id: githubKeys.client_id,
       client_secret: githubKeys.client_secret,
@@ -47,11 +50,21 @@ module.exports = {
       },
       json: true
     }
+
     request(options, function(err, resp, body) {
       //body.login gives us the username - body also has a lot of other properties.
-      console.log(body.login);
+			req.username = body.login;
+
+			console.log('req.username ', req.username);
+			//set username to a cookie so it can be grabbed later
+			res.cookie('ghUser', req.username);
 			//create new user with body.login
-			res.redirect('/')
+			var user = new User();
+			user.githubUsername = body.login;
+			user.save((err) => {
+				if (err) throw new Error('error saving username ', err);
+				next();
+			});
     });
   },
 

@@ -6,7 +6,8 @@ const User = require('./UserModel');
 
 var ApiSchema = Schema({
 	userId: { type: Number, ref: 'User' },
-	apiLink: String
+	scrapeURL: String,
+	githubUsername: String
 });
 
 

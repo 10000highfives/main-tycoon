@@ -23,7 +23,7 @@ var addDataObject = {
 	},
 
 	addData: function (url, userEmail) {
-		db.UserModel.findOne({userEmail: userEmail},function(err,docs){
+		db.User.findOne({userEmail: userEmail},function(err,docs){
 			if(err){
 				console.log(err);
 			}
