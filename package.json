@@ -5,7 +5,8 @@
   "scripts": {
     "build": "webpack",
     "start_webpack": "webpack-dev-server --inline --hot",
-    "start": "nodemon server.js"
+    "start": "nodemon server.js",
+    "test" : "node tests/test.js | tap-spec"
   },
   "keywords": [],
   "author": "",

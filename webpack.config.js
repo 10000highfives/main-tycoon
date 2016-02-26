@@ -13,7 +13,7 @@ module.exports = {
     loaders: [
       {
         test: /.jsx?$/,
-        loader: 'babel-loader',
+        loader: 'baxbel-loader',
         exclude: /node_modules/,
         query: {
           presets: ['es2015']

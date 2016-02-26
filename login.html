@@ -1,15 +1,30 @@
 <!DOCTYPE html>
   <html>
     <head>
+      <link href="//fonts.googleapis.com/css?family=Raleway:400,300,600" rel="stylesheet" type="text/css">
       <script src='https://code.jquery.com/jquery-2.2.0.min.js'></script>
       <script src="http://localhost:8080/assets/bundle.js"></script>
       <style>
-
+        body {
+          margin: 70px 0px 0px 60px;
+          background-color: white;
+          font-family: Raleway;
+        }
+        input {
+          background-color: #FFD900;
+          border-radius: 2px;
+          border: 2px solid #424242;
+          margin: 5px;
+          height: 26px;
+          font-size: 16px
+        }
       </style>
     </head>
     <body>
+      <h1>Welcome to API-Tycoon</h1>
+      <h3>Please sign-in with Github to access our app</h3>
       <form method="POST" action="/githubOAuth">
-        <input type="submit">
+        <input type="submit" value="Access Github">
       </form>
     </body>
   </html>

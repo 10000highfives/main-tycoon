@@ -16,10 +16,8 @@ var Api = require('./models/ApiModel');
 
 var app = express();
 app.use(cookieParser());
-app.use(bodyParser.urlencoded({
-	extended: true
-}));
 
+app.use(bodyParser.json());
 
 app.get('/', githubOAuth.isLoggedIn ,function(req, res) {
 
@@ -63,8 +61,8 @@ app.post('/apireqpost/post.stf', function(req, res, next) {
     res.send();
 });
 
-app.get('/apireqget/get.stf', function(req, res) {
-  // console.log(req.cookies.website);
+
+app.get('/apireqget/get.stf', function(req, res, next) {
 
 	phantom.create().then(function(ph) {
 		ph.createPage().then(function(page) {
@@ -90,9 +88,11 @@ app.get('/goodbye.html', function(req, res) {
 });
 
 app.post('/apisubmit', function(req, res) {
+
   var url = req.cookies.website;
   var id = req.cookies.apitycID;
 
+<<<<<<< HEAD
   //console.log('ID ID', id, 'url', url,' req body ', req.body);
   //console.log('these are the queries ', req.body);
 	//find username passed down from github
@@ -144,13 +144,10 @@ app.get('/getAccessToken', githubOAuth.getAccessToken, githubOAuth.getUserInfo, 
 	res.sendFile(__dirname + '/index.html');
 });
 
-// app.get('*', function(req, res, next) {
-//   console.log(req)
-//   res.redirect(req.cookies.website + req.originalUrl);
-// });
-
-
-
+app.get('*', function(req, res, next) {
+  console.log(req)
+  res.redirect(req.cookies.website + req.originalUrl);
+});
 
 
 

@@ -1,39 +1,103 @@
 <!DOCTYPE html>
   <html>
     <head>
+      <link href="//fonts.googleapis.com/css?family=Raleway:400,300,600" rel="stylesheet" type="text/css">
       <script src='https://code.jquery.com/jquery-2.2.0.min.js'></script>
       <script src="http://localhost:8080/assets/bundle.js"></script>
       <style>
+        body {
+          margin: 20px;
+          background-color: #EFEFEF;
+          font-family: Raleway;
+        }
+        /*blue 69D2E7
+        pondwater A7DBD8
+        beach storm E0E4CC
+        giant gol F38630
+        black #333333   dark gray #424242  blue  #00CCD6 lg  #EFEFEF yellow  #FFD900
+        dark orage FA6900*/
+        button {
+          background-color: #FFD900;
+          border-radius: 2px;
+          border: 2px solid #424242;
+          margin: 5px;
+          height: 24px;
+        }
+        input {
+          width: 200px;
+          height: 16px;
+          margin: 5px;
+        }
+
         #api-container {
           display: inline-block;
           width: 53%;
           vertical-align: top;
+          font-family: Raleway;
         }
 
         #gui-container {
+          padding: 10px;
+          margin-top: 33px;
+          background-color: #FFD900;
           display: inline-block;
-          width:45%;
-          border: 2px solid black;
+          width:40%;
+          margin-left: 20px;
+          border: 2px solid #424242;
           vertical-align: top;
+        }
+
+        #gui-container button {
+          background-color: white;
+          border-radius: 2px;
+          border: 2px solid #424242;
+          margin: 5px;
+          height: 24px;
+        }
+
+        #prop-name{
+          width: 200px;
+          height: 16px;
+          margin: 5px;
+        }
+
+        #submitBtn {
+          background-color: white;
+          border-radius: 2px;
+          border: 2px solid #424242;
+          margin: 5px;
+          height: 24px
         }
 
         #gui-top {
           height: 450px;
-          border: 5px solid mistyrose;
+          border: 2px solid #424242;
+        }
+
+        #dropDownMenu select {
+          background-color: white;
+          border-radius: 2px;
+          border: 2px solid #424242;
+          margin: 5px;
+          height: 24px;
         }
 
         #gui-bottom {
+          margin-top: 10px;
+          padding: 10px;
+          background-color: white;
           height: 450px;
-          border: 5px solid indigo;
+          border: 2px solid #424242;
         }
       </style>
     </head>
     <body>
+      <h1>Kimono 2.0</h1>
       <div>
         <div id="api-container">
           <div>
             <form action='apireqpost/post.stf' method='post'>
-              <input id='api-location' type="text" placeholder="Enter website here..." value='http://berkshirehathaway.com'/>
+              <input id='api-location' type="text" placeholder="Enter website here..." value='http://urbandictionary.com'/>
               <button id='api-prevent' type="submit">Get API</button>
             </form>
           </div>
@@ -42,6 +106,7 @@
           </div>
         </div>
         <div id='gui-container'>
+          <h3>API Data</h3>
           <div id='gui'>
             <!-- <form id="guiSelector">
               <input id="propName" type='text' placeholder='Name of Property' name='propName'/><br/>

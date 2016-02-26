@@ -1,6 +1,4 @@
 // add require dependencies
-const outputView = require('./controllers/outputView.js');
-const stringHandler = require('./controllers/stringHandler.js');
 const cssHighlight = require('./controllers/cssHighlight.js');
 const gui = require('./controllers/gui.js')
 
@@ -22,62 +20,88 @@ $(document).ready(function() {
     $.ajax({
       url: 'apireqpost/post.stf',
       type: 'POST',
-      data: {
+      contentType: 'application/json',
+      data: JSON.stringify({
         website: $('#api-location').val()
-      },
+      }),
       success: function(data) {
         $('#window-container').append('<iframe id="api-window" class="container" width="100%" height="900px" src="/apireqget/get.stf" name="iframe_a"></iframe>')
+
+        let mainArray = [];
 
         $('#api-window').load(function() {
 
           $('#api-window').contents().click(function(e) {
             e.preventDefault();
-						console.log('e.target ', e.target);
-            selFunc = outputView.genOutput(e.target);
-            selFunc('current');
-            $('#guiSelector').remove();
-            $('#dropDownMenu').remove();
-            gui.buildGUI(selFunc('current'));
-            outputView.onAttr(selFunc, '#guiDropDown');
 
-            // create the initial highlight function when first element is selected
-            if (highlight) highlight(null, 'clear');
-            highlight = cssHighlight();
-            highlight(selFunc('current'), 'initial');
-                            
-            $('#shorten').click((e) => {
+            let results = [];
+            let tempTarget = e.target;
+            console.log('temptarget====>',tempTarget);
+            results[0] = tempTarget;
+            var parents =$(e.target).parentsUntil('body');
+            console.log(parents);
+
+            while (tempTarget) {
+              results.push(tempTarget.parentNode);
+              tempTarget = tempTarget.parentNode;
+            }
+            console.log("results:", results);
+            // console.log($(`${results[0]}`));
+            // console.log(results[0].className);
+            let ancestryChain = "";
+            for (let i = (results.length - 4); i >= 0; i--) {
+              // if (results[0].className === ""){
+              //   console.log(results[0].className);
+              //   ancestryChain += results[i].nodeName +'.'+ results[i].className + ' ';
+              // } else {
+              ancestryChain += results[i].nodeName + ' ';
+            // }
+            }
+
+            ancestryChain = ancestryChain.toLowerCase();
+            console.log("ancestryChain:", ancestryChain);
+
+            let attributes = [];
+            for (let i = 0; i < e.target.attributes.length; i++) {
+              attributes.push(e.target.attributes[i]);
+            }
+            // console.log("attributes:", attributes);
+            attributes.unshift({name: "text"});
+            cssHighlight(ancestryChain);
+            gui.buildGUI(attributes);
+
+            // when you click the add element button
+            $('#addObj').click((e) => {
               e.preventDefault();
-              outputView.onShorten(selFunc);
-              highlight(selFunc('current'), 'shorten');
-              const attrSelect = $('#guiDropDown').val();
-              gui.buildDropDown(selFunc('current'));
-              $('#guiDropDown').val(attrSelect)
-              outputView.onAttr(selFunc, '#guiDropDown');
-            });
+              let indivObj = {};
+              let indivAttr = $('#guiDropDown').val();
+                indivObj.string = ancestryChain;
+                indivObj.name = $('#propName').val();
+                indivObj.attr = indivAttr;
+                indivObj.text = e.target.textContent || "";
+                console.log($(results[0]).text());
+              $('#gui-bottom').append("<p><strong>" + indivObj.name + ":</strong>"+  $(results[0]).text() + "</p>");
+              // console.log("main array before: ", mainArray);
+              mainArray.push(indivObj);
 
-            $('#lengthen').click((e) => {
-              e.preventDefault();
-              outputView.onLengthen(selFunc);
-              highlight(selFunc('current'), 'lengthen');
-              const attrSelect = $('#guiDropDown').val();
-              gui.buildDropDown(selFunc('current'));
-              $('#guiDropDown').val(attrSelect)
-              outputView.onAttr(selFunc, '#guiDropDown');
-            });
+              mainArray[0].first = true;
+              // console.log("mainArray after:", mainArray);
 
+              indivObj = {};
+              ancestryChain = "";
+
+
+
+              console.log("mainArray before AJAX Post: ", mainArray);
+            });
 
             $('#guiSelector').submit((e) => {
               e.preventDefault();
-              var body = {};
-              body.name = $('#propName').val();
-              body.string = selFunc('current');
-              body.text = ($('#guiDropDown').val() === 'text');
-              body.attr = $('#guiDropDown').val();
-
               $.ajax({
                 type: 'POST',
                 url: '/apisubmit',
-                data: body,
+                contentType: 'application/json',
+                data: JSON.stringify(mainArray),
 
                 success: function(data) {
                   console.log('data is', data);
@@ -90,10 +114,10 @@ $(document).ready(function() {
                   }, 500);
                 }
               });
-            })
-          })
+            });
+          });
         });
       }
-    })
-  })
-})
+    });
+  });
+});
