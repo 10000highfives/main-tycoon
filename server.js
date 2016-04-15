@@ -21,35 +21,15 @@ app.use(bodyParser.json());
 
 app.get('/', githubOAuth.isLoggedIn ,function(req, res) {
 
-	//get userId and set to cookieID
-	//res.cookie('apitycID', req.cookies.githubToken)
-	if (!req.cookies.apitycID || req.cookies.apitycID === 'null') {
-			var newUser = new User();
-			var uniqueID = newUser._id;
-			console.log('username here? ', req.username);
-			console.log('uniqueID', uniqueID);
-			// db.collection('apiCollection').insert({}, function(err, doc) {
-			// 	var uniqueID = doc.ops[0]._id;
-			res.cookie('apitycID', uniqueID);
-			res.send(fs.readFileSync(__dirname + '/index.html', 'utf8'));
-			// 	db.close();
-			// });
-		}
-
-    // if you need to see how to access the object after finding it
-    //   MongoClient(function(err, db) {
-    //     //var objID = new ObjectID(req.cookies.apitycID);
-		 //
-    //     db.collection('apiCollection').findOne({_id: objID}, function(err, result) {
-    //       console.log(result);
-    //       res.send(fs.readFileSync(__dirname + '/index.html', 'utf8'));
-    //       db.close();
-    //     });
-    //  });
-	 else {
-		res.send(fs.readFileSync(__dirname + '/index.html', 'utf8'));
-
-	}
+//get userId and set to cookieID
+  if (!req.cookies.apitycID || req.cookies.apitycID === 'null') {
+    var newUser = new User();
+    var uniqueID = newUser._id;
+    res.send(fs.readFileSync(__dirname + '/index.html', 'utf8'));
+  }
+  else {
+    res.send(fs.readFileSync(__dirname + '/index.html', 'utf8'));
+  }
 });
 
 app.get('/blank.html', function(req, res) {
@@ -92,7 +72,6 @@ app.post('/apisubmit', function(req, res) {
   var url = req.cookies.website;
   var id = req.cookies.apitycID;
 
-<<<<<<< HEAD
   //console.log('ID ID', id, 'url', url,' req body ', req.body);
   //console.log('these are the queries ', req.body);
 	//find username passed down from github
